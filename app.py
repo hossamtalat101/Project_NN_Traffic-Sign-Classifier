@@ -6,6 +6,61 @@ import pandas as pd
 from PIL import Image
 import os
 
+# أضف هذه المكتبات في أعلى ملف app.py
+from gtts import gTTS
+import base64
+
+# 1. القاموس العربي الكامل الذي أرسلته (ضعه داخل الكود)
+classes_ar = {
+    0:'تحديد السرعة (20 كم/س)', 1:'تحديد السرعة (30 كم/س)', 2:'تحديد السرعة (50 كم/س)',
+    3:'تحديد السرعة (60 كم/س)', 4:'تحديد السرعة (70 كم/س)', 5:'تحديد السرعة (80 كم/س)',
+    6:'نهاية منطقة تحديد السرعة (80 كم/س)', 7:'تحديد السرعة (100 كم/س)', 8:'تحديد السرعة (120 كم/س)',
+    9:'ممنوع التجاوز', 10:'ممنوع التجاوز للشاحنات', 11:'حق الأولوية عند التقاطع',
+    12:'طريق ذو أولوية', 13:'أفسح الطريق (Yield)', 14:'قف (Stop)', 15:'ممنوع مرور المركبات',
+    16:'ممنوع مرور الشاحنات', 17:'ممنوع الدخول', 18:'تحذير عام (خطر)', 19:'منحنى خطر لليسار',
+    20:'منحنى خطر لليمين', 21:'منحنيات مزدوجة', 22:'طريق وعر (مطبات)', 23:'طريق زلق',
+    24:'طريق يضيق من اليمين', 25:'أعمال طرق', 26:'إشارات ضوئية', 27:'عبور مشاة',
+    28:'عبور أطفال', 29:'عبور دراجات هوائية', 30:'احذر من الجليد/الثلج',
+    31:'عبور حيوانات برية', 32:'نهاية جميع القيود', 33:'إلزام بالاتجاه لليمين',
+    34:'إلزام بالاتجاه لليسار', 35:'إلزام بالاتجاه للأمام فقط', 36:'إلزام للأمام أو اليمين',
+    37:'إلزام للأمام أو اليسار', 38:'ابق على اليمين', 39:'ابق على اليسار',
+    40:'دوار إلزامي', 41:'نهاية منع التجاوز', 42:'نهاية منع التجاوز للشاحنات'
+}
+
+# 2. دالة Grad-CAM (المسؤولة عن الخريطة الحرارية)
+def get_gradcam_heatmap(img_array, model):
+    last_conv_layer_name = [layer.name for layer in model.layers if "conv2d" in layer.name][-1]
+    grad_model = tf.keras.models.Model([model.inputs], [model.get_layer(last_conv_layer_name).output, model.output])
+    with tf.GradientTape() as tape:
+        last_conv_layer_output, preds = grad_model(img_array)
+        pred_index = tf.argmax(preds[0])
+        class_channel = preds[:, pred_index]
+    grads = tape.gradient(class_channel, last_conv_layer_output)
+    pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
+    heatmap = last_conv_layer_output[0] @ pooled_grads[..., tf.newaxis]
+    heatmap = tf.squeeze(heatmap)
+    heatmap = tf.maximum(heatmap, 0) / tf.reduce_max(heatmap)
+    return heatmap.numpy()
+
+# 3. تعديل جزء التوقع في app.py لإضافة الصوت والخريطة الحرارية
+if file:
+    # ... (كود المعالجة السابق) ...
+    heatmap = get_gradcam_heatmap(final_input, model)
+    
+    # تحويل النص لصوت
+    tts = gTTS(text=f"انتبه، {classes_ar[id]}", lang='ar')
+    tts.save('alert.mp3')
+    
+    # عرض الصوت في Streamlit
+    st.audio('alert.mp3', format='audio/mp3')
+    
+    # دمج الخريطة الحرارية مع الصورة المعالجة للعرض
+    heatmap_resized = cv2.resize(heatmap, (32, 32))
+    heatmap_colored = cv2.applyColorMap(np.uint8(255 * heatmap_resized), cv2.COLORMAP_JET)
+    
+    # عرض النتائج
+    st.markdown(f"### النتيجة بالعربية: {classes_ar[id]}")
+
 # 1. إعدادات الصفحة
 st.set_page_config(page_title="نظام تصنيف الإشارات المرورية", layout="wide")
 
