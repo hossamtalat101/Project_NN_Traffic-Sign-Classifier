@@ -73,7 +73,7 @@ def load_assets():
 model = load_assets()
 
 # 4. واجهة المستخدم
-st.markdown('<h1 class="main-title"><i class="fas fa-crown"></i> المحلل الذكي الفاخر</h1>', unsafe_allow_html=True)
+st.markdown('<h1 class="main-title"><i class="fas fa-crown"></i> المحلل الذكي</h1>', unsafe_allow_html=True)
 
 col1, col2 = st.columns([1, 1], gap="large")
 
