@@ -45,7 +45,7 @@ st.markdown("""
 @st.cache_resource
 def load_assets():
     model = tf.keras.models.load_model('traffic_sign_model.h5')
-    labels = pd.read_csv('signnames.csv')
+    labels = pd.read_csv('german-traffic-signs/signnames.csv')
     return model, labels
 
 def process_image(img):
