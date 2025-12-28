@@ -15,7 +15,7 @@ st.markdown("""
     .stButton>button { width: 100%; border-radius: 5px; height: 3em; background-color: #007bff; color: white; }
     .prediction-box { padding: 20px; border-radius: 10px; background-color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
     </style>
-    """, unsafe_allow_name=True)
+    """, unsafe_allow_html=True)
 
 # 2. تحميل الموديل وأسماء الإشارات
 @st.cache_resource
