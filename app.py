@@ -41,11 +41,21 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 3. وظائف التحميل والمعالجة
 @st.cache_resource
 def load_assets():
+    # تحميل الموديل من المسار الرئيسي
     model = tf.keras.models.load_model('traffic_sign_model.h5')
-    labels = pd.read_csv('german-traffic-signs/signnames.csv')
+    
+    # تحديد المسار الصحيح بناءً على بنية مجلداتك في GitHub
+    csv_path = 'german-traffic-signs/signnames.csv'
+    
+    import os
+    if os.path.exists(csv_path):
+        labels = pd.read_csv(csv_path)
+    else:
+        # حل احتياطي إذا تم نقل الملف للمجلد الرئيسي مستقبلاً
+        labels = pd.read_csv('signnames.csv') 
+        
     return model, labels
 
 def process_image(img):
