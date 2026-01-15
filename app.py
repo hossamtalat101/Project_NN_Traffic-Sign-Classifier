@@ -97,7 +97,7 @@ with st.sidebar:
     st.markdown('<p class="sidebar-text">يعتمد هذا النظام على معمارية CNN المتقدمة، حيث يقوم بمعالجة الصور عبر طبقات تلافيفية لاستخلاص الميزات الهندسية.</p>', unsafe_allow_html=True)
 
 # 5. الواجهة الرئيسية
-st.markdown('<h1 class="main-title"><i class="fas fa-crown"></i> نظام التحليل الذكي الفاخر</h1>', unsafe_allow_html=True)
+st.markdown('<h1 class="main-title"><i class="fas fa-crown"></i> نظام التحليل الذكي</h1>', unsafe_allow_html=True)
 
 col1, col2 = st.columns([1, 1.2], gap="large")
 
