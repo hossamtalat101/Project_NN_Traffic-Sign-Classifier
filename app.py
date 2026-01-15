@@ -110,7 +110,7 @@ if 'history' not in st.session_state:
 
 # الشريط الجانبي
 with st.sidebar:
-    st.markdown("### <div class='status-pulse'></div> System: Active")
+    st.markdown("### <div class='status-pulse'></div> System: Active", unsafe_allow_html=True)
     st.markdown("---")
     st.markdown("### 🕒 Recent Logs")
     for entry in reversed(st.session_state.history[-5:]):
